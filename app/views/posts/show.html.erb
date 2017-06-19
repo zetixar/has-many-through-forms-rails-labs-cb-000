@@ -1,1 +1,38 @@
+Title: <%= @post.title %><br>
+Content: <%= @post.content %><br>
+Categories:
+<ul>
+  <% @post.categories.each do |category| %>
+  <li><%= category.name %></li>
+  <% end %>
+</ul>
 
+
+Add your comment:
+<%= form_for @comment do |f| %>
+  Content: <%= f.text_field :content %>
+  <%= f.hidden_field :post_id, value: @post.id %><br>
+  User: <%= f.collection_select :user_id, User.all, :id, :username, prompt: true %><br>
+  <%= f.fields_for :user, User.new do |user_fields| %>
+  <%# or the following line. What I can't undrestand is that how it is possible for us to not use user_attributes
+  method. My guess is user_attributes gets called in comment model whenever we want to create new user even though we dont call it
+  %>
+  <%# f.fields_for :user_attributes, @comment.user do |user_fields| %>
+
+    New user? Add your name <%= user_fields.text_field :username %><br>
+  <% end %>
+  <%= f.submit %>
+<% end %>
+
+<hr>
+Comments:
+  <% @post.comments.each do |comment| %>
+    <p><%= comment.user.username + " says: " + comment.content %></p>
+  <% end %>
+<hr>
+Users:
+<ul>
+  <% @post.uniq_users.each do |user| %>
+    <li><%= link_to user.username, user_path(user) %></li>
+  <% end %>
+</ul>
